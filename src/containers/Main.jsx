@@ -3,13 +3,16 @@ import CardList from '../components/CardList'
 import SearchBox from '../components/SearchBox'
 import Scroll from '../components/Scroll'
 import ErrorBoundry from '../components/ErrorBoundry'
-import { setSearchInput} from '../action'
+import { setSearchInput, requestRobots} from '../action'
 import {connect} from 'react-redux'
 
 const mapStateToProps = state => {
     return {
         // searchInput: state.searchRobots.searchInput
-        searchInput: state.searchInput
+        searchInput: state.searchRobots.searchInput,
+        robots: state.requestRobots.robots,
+        isPending: state.requestRobots.isPending,
+        error: state.requestRobots.error
     }
 }
 
@@ -17,32 +20,20 @@ const mapDispatchToProps = dispatch => {
     
     return {
         onSearchChange: (event) => {
-            console.log(event)
-            dispatch(setSearchInput(event.target.value))}
+            dispatch(setSearchInput(event.target.value))},
+            
+        //same as dispatch(requestRobots())
+        onRequestRobots: () => dispatch(requestRobots())
     }
 }
 
  function Main(props) {
-    const { searchInput, onSearchChange } = props;
-    const [robots, setRobots] = useState([])
-    const [isLoading, setLoading] = useState(true)
+    const { searchInput, onSearchChange, onRequestRobots, robots, isPending } = props;
+ 
 
     
-    const fetchData = () => {
-        fetch('http://jsonplaceholder.typicode.com/users')
-        .then(res => res.json())
-        .then(res => {
-            setRobots(res)
-            setLoading(false)
-        })
-        .catch(err => {
-            console.log(err)
-        })
-        
-    }
-    
     useEffect(()=> {
-        fetchData()
+        onRequestRobots()
     },[])
 
     const filterRobots = () => {
@@ -55,7 +46,7 @@ const mapDispatchToProps = dispatch => {
         <div className="tc">
             <h1 className="f1">RoboFriends</h1>
             <SearchBox searchInput={searchInput} onSearchChange={onSearchChange} />
-            {isLoading 
+            {isPending 
             ?   <h1 className="f2">Loading...</h1>
             :   <Scroll> 
                     <ErrorBoundry>
