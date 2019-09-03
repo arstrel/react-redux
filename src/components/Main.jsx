@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import CardList from './CardList'
 import SearchBox from './SearchBox'
+import Scroll from './Scroll'
+import ErrorBoundry from './ErrorBoundry'
 
 
 export default function Main() {
@@ -37,8 +39,12 @@ export default function Main() {
             <h1 className="f1">RoboFriends</h1>
             <SearchBox searchField={searchField} setSearchField={setSearchField} />
             {isLoading 
-            ? <h1 className="f2">Loading...</h1>
-            : <CardList robots={filterRobots()}/>}
+            ?   <h1 className="f2">Loading...</h1>
+            :   <Scroll> 
+                    <ErrorBoundry>
+                        <CardList robots={filterRobots()}/>
+                    </ErrorBoundry>
+                </Scroll>}
         </div>
     )
 }
